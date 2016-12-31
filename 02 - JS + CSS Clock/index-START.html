@@ -52,7 +52,7 @@
       position: relative;
       width: 100%;
       height: 100%;
-      transform: translateY(-3px); /* account for the height of the clock hands */
+      transform: translateY(-3px) rotate(90deg); /* account for the height of the clock hands and initial position */
     }
 
     .hand {
@@ -61,7 +61,7 @@
       background:black;
       position: absolute;
       top:50%;
-      transform: rotate(90deg);
+      /*transform: rotate(90deg);*/
       transform-origin: 100%;
       transition: all 100ms cubic-bezier(0.18, 2.32, 0.58, 1);
     }
@@ -69,8 +69,8 @@
   </style>
   <script>
 
-    "use strict";
     (function() {
+    "use strict";
       
       // grab elements
       const hrHand = document.querySelector('.hour-hand');
@@ -91,22 +91,31 @@
       }
 
       function updateHands(time) {
-        const rotation = 360 / 60 // 6 - the amount of rotation needed for each second/min
-        , hrRotation = 360 / 12; // 30 - roation needed per hour
-       
-        secHand.position = rotation * time.seconds + 90 // get the degree of rotation
-        minHand.position = rotation * time.minutes + 90
-        hrHand.position = hrRotation * time.hour + 90;
+        // changed maths 354
+        secHand.deg = ((time.seconds / 60) * 360) // rotation needed for each second/min
+        minHand.deg = ((time.minutes / 60) * 360)
+        hrHand.deg = ((time.hour/ 12) * 360); // 30 - roation needed per hour
+
+        if (secHand.deg === 0) {
+          // second hand hacking
+          secHand.style.transition = 'none';
+        } else {
+          secHand.style.transition = 'all 100ms cubic-bezier(0.18, 2.32, 0.58, 1)'
+        }
         
-        secHand.setAttribute('style', 'transform: rotate(' + secHand.position + 'deg)');
-        minHand.setAttribute('style', 'transform: rotate(' + minHand.position + 'deg)');
-        hrHand.setAttribute('style', 'transform: rotate(' + hrHand.position + 'deg)');
+        // chagned from setAttribute to es6 template literals
+        secHand.style.transform = `rotate(${secHand.deg}deg)`; // really sweet!
+        minHand.style.transform = `rotate(${minHand.deg}deg)`; 
+        hrHand.style.transform = `rotate(${hrHand.deg}deg)`; 
+
       }
 
       let intervalID = setInterval(function(){
         console.log( getTime() );
         updateHands(getTime());
       }, 1000);
+
+      document.addEventListener('load', updateHands)
 
     }());
 
