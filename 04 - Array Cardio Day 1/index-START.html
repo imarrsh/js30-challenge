@@ -70,6 +70,36 @@
 
     // 6. create a list of Boulevards in Paris that contain 'de' anywhere in the name
     // https://en.wikipedia.org/wiki/Category:Boulevards_in_Paris
+    
+    // this code will work in safari console lol
+    const url = 'https://en.wikipedia.org/wiki/Category:Boulevards_in_Paris';
+    
+    const Scrape = function(){
+      this.get = function(url, cb){
+        const xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function(){
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+              cb(xhr.responseText);
+            }
+          }
+        xhr.open('GET', url, true);
+        xhr.send( null );
+      }
+    }
+
+    const wiki = new Scrape();
+    wiki.get(url, function(resp){
+      // fake the dom
+      let el = document.createElement('html');
+      el.innerHTML = resp; // hack the resp into being actual html
+
+      const category = el.querySelector('.mw-category');
+      const links = Array.from(category.querySelectorAll('a'));
+      const de = links.map(link => link.textContent)
+                      .filter(streetName => streetName.includes('de'));
+      console.log(de); // log the criteria
+      return el;
+    })
 
     // run in console on the url above
     // const category = document.querySelector('.mw-category');
