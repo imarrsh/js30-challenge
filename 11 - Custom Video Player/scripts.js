@@ -30,14 +30,24 @@
     viewer.volume = e.currentTarget.value;
   }
 
+  const handlePlaybackRate = function(e){
+    console.log(e.currentTarget.value);
+    viewer.playbackRate = e.currentTarget.value;
+  }
+
 
   // playback listeners
   playButton.addEventListener('click', handlePlayToggle);
   viewer.addEventListener('click', handlePlayToggle);
 
   // volume listeners
-  volume.addEventListener('click', handleVolume);
+  volume.addEventListener('change', handleVolume);
   volume.addEventListener('mousemove', handleVolume);
+
+  //playback rate listener
+  playbackRate.addEventListener('change', handlePlaybackRate);
+  playbackRate.addEventListener('mousemove', handlePlaybackRate);
+
 
 
 /* : some interesting things on video element for this project
