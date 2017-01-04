@@ -5,89 +5,133 @@
   const viewer = document.querySelector('.viewer');
   const playButton = document.querySelector('.toggle');
   const scrubber = document.querySelector('.progress');
+  const ranges = document.querySelectorAll('input[type="range"]');
   const progress = scrubber.querySelector('.progress__filled');
-  const volume = document.querySelector('input[name="volume"]');
-  const playbackRate = document.querySelector('input[name="playbackRate"]');
-  const skipBack = document.querySelector('button[data-skip="-10"]');
-  const skipForward = document.querySelector('button[data-skip="25"]');
+  // const volume = document.querySelector('input[name="volume"]');
+  // const playbackRate = document.querySelector('input[name="playbackRate"]');
+  const skipButtons = document.querySelectorAll('[data-skip]');
+  // const skipForward = document.querySelector('button[data-skip="25"]');
 
 
   // play/pause functions
-  let isPlaying = false;
+  // let isPlaying = false;
   const handlePlayToggle = function(){
-    
-    isPlaying = !isPlaying; // flip isPlaying flag
-    
-    if (isPlaying){
+    if (viewer.paused) {
       viewer.play();
-      playButton.innerText = "||";
     } else {
       viewer.pause();
-      playButton.innerText = "►";
     }
+
+    // isPlaying = !isPlaying; // flip isPlaying flag
+    
+    // if (isPlaying){
+    //   viewer.play();
+    //   playButton.innerText = "||";
+    // } else {
+    //   viewer.pause();
+    //   playButton.innerText = "►";
+    // }
   }
 
-  const handleVolume = function(e){
-    viewer.volume = e.currentTarget.value;
+  const handleToggle = function(){
+    const icon = (this.paused) ? '►' : '▌▌';
+    playButton.textContent = icon;
   }
 
-  const handlePlaybackRate = function(e){
-    console.log(e.currentTarget.value);
-    viewer.playbackRate = e.currentTarget.value;
+  // const handleVolume = function(e){
+  //   viewer.volume = e.currentTarget.value;
+  // }
+
+  // const handlePlaybackRate = function(e){
+  //   // console.log(e.currentTarget.value);
+  //   viewer.playbackRate = e.currentTarget.value;
+  // }
+
+  const handleRange = function(e){
+    const name = e.target.name;
+    const value = e.target.value;
+    viewer[name] = value;
   }
   
-  let isScrubbing = false;
 
   const handleUpdateTime = function(e){
-    const playhead = e.target.currentTime
-    , duration = e.target.duration
-    , total = (playhead / duration) * 100; // get percentage
+    const total = (viewer.currentTime / viewer.duration) * 100; // get percentage
 
     //update the scubber
     // const progress = scrubber.querySelector('.progress__filled');
-    progress.style.flexBasis = total + '%';
+    progress.style.flexBasis = `${total}%`;
 
-    console.log('played', playhead, 'of', duration);
+    // console.log('played', playhead, 'of', duration);
   }
 
   const handleSeek = function(e){
-    // console.log(e);
-    const totalWidth = e.currentTarget.offsetWidth;
-    const movePlayhead = (e.offsetX / totalWidth) * 100;
-    const currentTime = viewer.currentTime;
-    const totalTime = viewer.duration; 
-    // 560/100 * 95
-    // console.log((movePlayhead / totalWidth) * 100);
+    // determine current width of scrub bar
+    // const scrubWidth = scrubber.offsetWidth; 
+    // determine where on scrub bar mouse came down in percent
+    const movePlayhead = (e.offsetX / scrubber.offsetWidth) * 100; 
+    // get current time of media
+    // const currentTime = viewer.currentTime;
+    // get duration of media
+    // const totalTime = viewer.duration; 
+    // if mouse is down or event type is click
     if (isScrubbing || e.type === 'click') {
-      progress.style.flexBasis = ((currentTime / totalTime) * 100) + '%';
-      viewer.currentTime = (totalTime / 100) * movePlayhead;
+      // update visual position of progess bar "drag"
+      progress.style.flexBasis = ((viewer.currentTime / viewer.duration) * 100) + '%';
+      // update the current time of media
+      viewer.currentTime = (viewer.duration / 100) * movePlayhead;
     }
   }
 
-  const handleScrub = function(e){
-    isScrubbing = !isScrubbing;
+  const handleSkip = function(e){
+    // const skipValue = parseInt(this.dataset.skip);
+    // console.log(skipValue);
+    // const playheadAt = viewer.currentTime;
+    
+    // viewer.currentTime = playheadAt + skipValue;
+    const skipValue = parseFloat(e.target.dataset.skip);
+    viewer.currentTime += skipValue;
   }
 
+
   // playback listeners
-  playButton.addEventListener('click', handlePlayToggle);
+  // playButton.addEventListener('click', handlePlayToggle);
   viewer.addEventListener('click', handlePlayToggle);
+  playButton.addEventListener('click', handlePlayToggle);
+  viewer.addEventListener('play', handleToggle);
+  viewer.addEventListener('pause', handleToggle);
+  
+  // volume & playback listeners
+  ranges.forEach(range => range.addEventListener('change', handleRange));
+  ranges.forEach(range => range.addEventListener('mousemove', handleRange));
 
-  // volume listeners
-  volume.addEventListener('change', handleVolume);
-  volume.addEventListener('mousemove', handleVolume);
+  // volume.addEventListener('change', handleVolume);
+  // volume.addEventListener('mousemove', handleVolume);
 
-  //playback rate listener
-  playbackRate.addEventListener('change', handlePlaybackRate);
-  playbackRate.addEventListener('mousemove', handlePlaybackRate);
+  // //playback rate listener
+  // playbackRate.addEventListener('change', handlePlaybackRate);
+  // playbackRate.addEventListener('mousemove', handlePlaybackRate);
 
   viewer.addEventListener('timeupdate', handleUpdateTime);
 
+  // event listeners for scrubber
+  let isScrubbing = false;
   scrubber.addEventListener('click', handleSeek);
-  scrubber.addEventListener('mousemove', handleSeek);
-  scrubber.addEventListener('mousedown', handleScrub);
-  scrubber.addEventListener('mouseup', handleScrub);
+  scrubber.addEventListener('mousemove', (e) => {
+    if (isScrubbing) {
+      handleSeek(e)
+    }
+  })
+  scrubber.addEventListener('mousedown', () => isScrubbing = true);
+  scrubber.addEventListener('mouseup', () => isScrubbing = false);
 
+  // skipping listeners
+  skipButtons.forEach(btn => btn.addEventListener('click', handleSkip));
+  // skipForward.addEventListener('click', handleSkip);
 
+// const handleScrub = function(e){
+//     // flip true/false value
+//     isScrubbing = !isScrubbing;
+//   }
 /* : some interesting things on video element for this project
    defaultPlaybackRate
    playbackRate
