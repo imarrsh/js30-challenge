@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Key Detection</title>
+  <script type="text/javascript" src="http://www.cornify.com/js/cornify.js"></script>
+</head>
+<body>
+<script>
+(function(){
+  "use strict";
+  // key code sequencer - we're looking for the magic word
+  // store the pressed keys in array
+  // store the passphrase
+  // run window event on keyup to do the work
+  const pressed = [];
+  const secret = 'marshall';
+
+  window.addEventListener('keyup', (e) => {
+    // console.log(e.key);
+    pressed.push(e.key);
+    // we need to trim the pressed keys from the back dynamically
+    // splice( start, trim amount )
+    pressed.splice(-secret.length - 1, pressed.length - secret.length);
+    console.log(pressed)
+    
+    if (pressed.join('').includes(secret)) {
+      console.log('you found the secret!')
+      cornify_add();
+    }
+
+  });
+
+}());
+</script>
+</body>
+</html>
