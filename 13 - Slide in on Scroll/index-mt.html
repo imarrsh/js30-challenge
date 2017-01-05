@@ -58,6 +58,42 @@
       };
     }
 
+    const images = document.querySelectorAll('.slide-in');
+
+    const handleSlideIn = function(e){
+      // we calculate were the bottom of the window is relative
+      // to the scrollY (scrollY + innerheight) since scrollY is 
+      // the number of px the top of the window has traveled 
+      // away from the top of the document
+      const viewportBottom = window.scrollY + window.innerHeight; // ex: 600
+      // log the scoll value
+      console.log('viewport bottom', viewportBottom); // ex: starting at 600
+      images.forEach((image, i) => {
+        // position of half the height of imgae on page
+        // from viewport bottom?
+        const slideInAt = viewportBottom - image.height / 2;
+        // const slideInAt = image.offsetTop;
+        // ex: images[0]starts with this
+        // 600 - 400 / 2
+        // 600 - 200 
+        // 400
+        console.log('mid img', i, slideInAt, image.offsetTop)
+        // bottom of image
+        const imageBottom = image.offsetTop + image.height; 
+        // 
+        const isHalfShown = slideInAt >= image.offsetTop;
+        const isNotScrolledPast = window.scrollY < imageBottom;
+        // console.log(isHalfShown); // 
+        if (isHalfShown && isNotScrolledPast) {
+          image.classList.add('active');
+        } else {
+          image.classList.remove('active');
+        }
+      });  
+    }
+
+    window.addEventListener('scroll', debounce(handleSlideIn))
+
   </script>
 
   <style>
