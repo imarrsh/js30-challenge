@@ -1,0 +1,79 @@
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mouse Shadow</title>
+</head>
+<body>
+
+  <div class="hero">
+    <h1 contenteditable>🔥WOAH!</h1>
+  </div>
+
+  <style>
+  html {
+    color:black;
+    font-family: sans-serif;
+  }
+
+  .hero {
+    min-height: 100vh;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    color:black;
+  }
+
+  h1 {
+    text-shadow: 10px 10px 0 rgba(0,0,0,1);
+    font-size: 100px;
+  }
+  </style>
+
+<script>
+
+(function(){
+
+  const hero = document.querySelector('.hero');
+  const text = document.querySelector('h1');
+  const walk = 100; // 100px travel
+
+  function moveShadow (e){
+    // element to modify
+    // element size
+    // const width = hero.offsetWidth;
+    // const height = hero.offsetHeight;
+    const {offsetWidth: width, offsetHeight: height} = hero;
+    // split into quadrants
+    // const lr = width/2;
+    // const tb = height/2;
+    // mousemove coordinates
+    // const mouseX = e.offsetX;
+    // const mouseY = e.offsetY;
+    // quadrant coordinates
+    // let x = lr - mouseX;
+    // let y = tb - mouseY;
+    let {offsetX: x, offsetY: y} = e;
+
+    if (this !== e.target){
+      // const offsetL = text.offsetLeft;
+      // const offsetT = text.offsetTop;
+      x = x + e.target.offsetLeft;
+      y = y + e.target.offsetTop;
+    }
+
+    const xWalk = Math.round((x / width * walk) - (walk /2)); // mouseposition / el width
+    const yWalk = Math.round((y / height * walk) - (walk /2));
+
+    console.log(x, y);
+    text.style.textShadow = `${xWalk * -1}px ${yWalk * -1 }px 5px rgba(0,0,0,.5)`;
+  }
+
+  hero.addEventListener('mousemove', moveShadow);
+
+
+}());
+
+</script>
+</body>
+</html>
