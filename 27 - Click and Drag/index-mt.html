@@ -37,22 +37,22 @@
 <script>
   const slider = document.querySelector('.items');
   let isDown = false;
-  let downAt = 0;
-  let left = slider.scrollLeft;
+  let downAt;
+  let left;
 
-  const toggleMouseDown = function(e){
-    isDown = !isDown;
-    downAt = e.clientX;
-    left = slider.scrollLeft;
-    // console.log(downAt);
-  }
+  // const toggleMouseDown = function(e){
+  //   isDown = !isDown;
+  //   downAt = e.pageX;
+  //   left = slider.scrollLeft;
+  //   // console.log(downAt);
+  // }
 
-  const toggleActive = function (e){
-    toggleMouseDown(e);
+  const toggleActive = function (){
+    // toggleMouseDown(e);
     if (isDown) {
-      this.classList.add('active');
+      slider.classList.add('active');
     } else {
-      this.classList.remove('active');
+      slider.classList.remove('active');
     }
   }
 
@@ -60,11 +60,27 @@
     // console.log(e)
     const dragDistance = (e.clientX - downAt) * -1;
     slider.scrollLeft = left + dragDistance;
-    console.log(dragDistance, slider.scrollLeft);
+    console.log(dragDistance, slider.scrollLeft, downAt);
   }
 
-  slider.addEventListener('mousedown', toggleActive);
-  slider.addEventListener('mouseup', toggleActive);
+  slider.addEventListener('mousedown', (e) => {
+    isDown = true;
+    downAt = e.clientX;
+    left = slider.scrollLeft;
+    toggleActive();
+  });
+
+  slider.addEventListener('mouseup', () => {
+    isDown = false;
+    left = slider.scrollLeft;
+    toggleActive();
+  });
+
+  slider.addEventListener('mouseleave', () => {
+    isDown = false;
+    toggleActive();
+  });
+
   slider.addEventListener('mousemove', (e) => isDown && drag(e));
 
 </script>
